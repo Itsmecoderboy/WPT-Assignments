@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Students Database</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.js" 
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+        <script>
+
+            $(()=>{
+
+                $('#rollno').blur(()=>{
+                    console.log('Blur event');
+
+                    let ip=$('#rollno').val();
+
+                    let dbparams={
+                        data:{rollno:ip},
+                        url:'http://localhost:9898/checkDetails',
+                        type:'get',
+                        dataType:'json',
+                        success:(serverResponse)=>{
+                            console.log(serverResponse);
+
+                            if(serverResponse.status==true){
+                                $('#status').text('Student Already present');
+                                $('#stdname').val(serverResponse.stdDetails.sname);
+                                $('#smarks').val(serverResponse.stdDetails.marks);
+                            }else{
+                                $('#status').text('Student details not found');
+                                $('#stdname').val(" ");
+                                $('#smarks').val(" ");
+                            }
+                        },
+                        error:(serverResponse)=>{
+                            console.log("Error occured "+serverResponse);
+                        }
+                    };
+
+                    console.log("Ajax time");
+                    $.ajax(dbparams);
+                });
+
+                $('#addstd').click(()=>{
+                        console.log('Add item button has been click');
+                    
+                    let input={x:$('#rollno').val(), y:$('#stdname').val(), z:$('#smarks').val()};
+
+                    console.log(input);
+
+                    let dbparams={
+                        data:input,
+                        url:'http://localhost:9898/addStudent',
+                        type:'get',
+                        dataType:'json',
+                        success:(serverResponse)=>{
+                            console.log("Success");
+                            console.log(serverResponse);
+                            if(serverResponse.status==true){
+                                $('#status').text("Student details added successfullly");
+                            }else{
+                                $('#status').text("Student details not added successfullly");
+                            }
+
+                            showStudentList();
+
+                        },
+                        error:(serverResponse)=>{
+                            console.log("failure");
+                            console.log(serverResponse);
+                            $('#status').text("Error from server");
+
+                        }
+                    };
+
+                    console.log('AJAX time');
+                    $.ajax(dbparams);
+
+
+                });
+
+                $('#updatestd').click(()=>{
+                    let ip={x:$('#rollno').val(), y:$('#stdname').val(), z:$('#smarks').val()};
+                     let dbparams={
+                        data:ip,
+                        url:'http://localhost:9898/updateData',
+                        type:'get',
+                        dataType:'json',
+                        success:(serverResponse)=>{
+                            console.log("success at ServerResponse");
+                        },
+                        error:(serverResponse)=>{
+                            console.log("error at ServerResponse");
+                        },
+                     };
+
+                     $.ajax(dbparams);
+
+                });
+
+                function showStudentList(){
+                    let dbparams={
+                        data:{},
+                        url:'http://localhost:9898/ShowList',
+                        type:'get',
+                        dataType:'json',
+                        success:(serverResponse)=>{
+                            console.log(serverResponse);
+
+                            student=serverResponse;
+
+                            let studentList="";
+                            for(let i=0;i<student.length;i++){
+                                studentList += "<br/>" +student[i].rollno+" "+student[i].sname+" "+student[i].marks;
+                            }
+
+                            $('#list').html(studentList);
+                        },
+                        error:(serverResponse)=>{
+                            console.log("Error "+serverResponse);
+                        }
+                    };
+
+                    console.log('AJAX time');
+                    $.ajax(dbparams);
+
+                    
+                };
+
+            });
+        </script>
+    </head>
+    <body>
+        <h2>Student Details</h2>
+        <input type="text" id="rollno" Placeholder="Enter Roll Number"/>
+        <span id="status">Hey students</span><br/><br/>
+        <input type="text" id="stdname" Placeholder="Student Name"/><br/><br/>
+        <input type="text" id="smarks" Placeholder="Maths Marks"/><br/><br/>
+        <button id="addstd">Add student</button>
+        <button id="updatestd">Update student Data</button>
+        <hr/>
+        <p id="list">Show srudents lits here</p>
+
+    </body>
+
+</html>

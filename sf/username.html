@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Username & Password</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script>
+
+            $(()=>{
+
+                    $("#loginbtn").click(()=>{
+
+                        let input={username:$("#username").val(),password:$("#password").val()};
+                        console.log("Input is set");
+                        let inputtofunction={
+                            data:input,
+                            url:'http://localhost:9898/login',
+                            type:'get',
+                            dataType:'json',
+                            success:(responsefromserver)=>{
+                                console.log("Inside success of server input");
+                                if(responsefromserver.status  === true )
+                              {
+                                       $("#msg").text("successful login"); 
+                              }else
+                              {
+                                    $("#msg").text("userid or password wrong");
+                              }
+                            },
+                            error:(errorgivenbyserver)=> { console.log("failed to contact server "+errorgivenbyserver)}
+                        };
+                        
+                        console.log("Lets call AJAX");
+                        $.ajax(inputtofunction);
+                        
+                    });
+
+
+                    
+
+
+            });
+        </script>
+    <body>
+        <h1>Login page</h1>
+        <input type="text" id="username" placeholder="username">
+        <input type="text" id="password" placeholder="password">
+        <button id="loginbtn">Login</button>
+        <p id="msg">What happend</p>
+    </body>
+</html>
